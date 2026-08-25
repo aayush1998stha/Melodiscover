@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">📊 Your Stats</h1>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5>Total Plays</h5>
+                <h2 class="display-4">{{ total_plays }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card"><div class="card-body"><h5>Top Genres</h5><canvas id="genreChart"></canvas></div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card"><div class="card-body"><h5>Top Artists</h5><canvas id="artistChart"></canvas></div></div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('genreChart'), {
+    type: 'bar',
+    data: { labels: {{ genre_labels|safe }}, datasets: [{ label: 'Plays', data: {{ genre_data|safe }}, backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF'] }] },
+    options: { responsive: true }
+});
+new Chart(document.getElementById('artistChart'), {
+    type: 'pie',
+    data: { labels: {{ artist_labels|safe }}, datasets: [{ label: 'Plays', data: {{ artist_data|safe }}, backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF'] }] }
+});
+</script>
+{% endblock %}

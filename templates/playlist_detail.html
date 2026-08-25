@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-3">{{ playlist.name }}</h1>
+<a href="{{ url_for('list_playlists') }}" class="btn btn-secondary mb-3">← Back</a>
+<form method="POST" action="{{ url_for('add_to_playlist', playlist_id=playlist.id) }}" class="mb-4">
+    <div class="input-group">
+        <select name="song_id" class="form-select" required>
+            <option value="">Add a song...</option>
+            {% for song in songs %}{% if song.id not in playlist.songs|map(attribute='song_id') %}
+            <option value="{{ song.id }}">{{ song.title }} - {{ song.artist }}</option>
+            {% endif %}{% endfor %}
+        </select>
+        <button class="btn btn-primary" type="submit">Add</button>
+    </div>
+</form>
+<ul class="list-group">
+    {% for ps in playlist.songs %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div><strong>{{ ps.song_title }}</strong> - {{ ps.song_artist }} <span class="badge bg-secondary">{{ ps.song_genre }}</span></div>
+        <a href="{{ url_for('remove_from_playlist', playlist_id=playlist.id, ps_id=ps.id) }}" class="btn btn-sm btn-danger">Remove</a>
+    </li>
+    {% else %}
+    <li class="list-group-item text-muted">Empty. Add songs!</li>
+    {% endfor %}
+</ul>
+{% endblock %}

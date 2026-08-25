@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Discover Music</h1>
+<form method="GET" action="{{ url_for('index') }}" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Search by song or artist..." value="{{ search_query }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+        {% if search_query %}<a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Clear</a>{% endif %}
+    </div>
+</form>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for song in songs %}
+    <div class="col">
+        <div class="card h-100">
+            <img src="{{ song.album_art }}" class="card-img-top" alt="{{ song.title }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ song.title }}</h5>
+                <p class="card-text text-muted">{{ song.artist }} · {{ song.genre }}</p>
+                <button class="btn btn-success play-btn" data-id="{{ song.id }}" data-title="{{ song.title }}" data-artist="{{ song.artist }}" data-preview="{{ song.preview_url }}">▶ Play</button>
+                <audio class="audio-player" id="audio-{{ song.id }}" src="{{ song.preview_url }}"></audio>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+document.querySelectorAll('.play-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const audio = document.getElementById('audio-' + this.dataset.id);
+        document.querySelectorAll('.audio-player').forEach(a => { if (a !== audio) a.pause(); });
+        if (audio.paused) { audio.play(); this.textContent = '⏸ Pause'; } else { audio.pause(); this.textContent = '▶ Play'; }
+    });
+});
+document.querySelectorAll('.audio-player').forEach(audio => {
+    audio.addEventListener('ended', function() {
+        const btn = document.querySelector(`.play-btn[data-id="${this.id.replace('audio-', '')}"]`);
+        if (btn) btn.textContent = '▶ Play';
+    });
+});
+document.querySelectorAll('.play-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        fetch('/play/' + this.dataset.id).catch(err => {});
+    });
+});
+</script>
+{% endblock %}

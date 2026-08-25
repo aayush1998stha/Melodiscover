@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Your Playlists</h1>
+<form method="POST" action="{{ url_for('create_playlist') }}" class="mb-4">
+    <div class="input-group">
+        <input type="text" name="name" class="form-control" placeholder="Playlist name..." required>
+        <button class="btn btn-primary" type="submit">➕ Create</button>
+    </div>
+</form>
+<div class="row">
+    {% for playlist in playlists %}
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ playlist.name }}</h5>
+                <p class="card-text text-muted">{{ playlist.songs|length }} songs</p>
+                <a href="{{ url_for('view_playlist', playlist_id=playlist.id) }}" class="btn btn-outline-primary">View</a>
+                <a href="{{ url_for('delete_playlist', playlist_id=playlist.id) }}" class="btn btn-outline-danger" onclick="return confirm('Delete?')">Delete</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col"><div class="alert alert-info">No playlists yet.</div></div>
+    {% endfor %}
+</div>
+{% endblock %}

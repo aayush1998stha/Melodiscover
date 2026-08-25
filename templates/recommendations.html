@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">🎯 For You</h1>
+{% if not has_history %}
+<div class="alert alert-info">Start listening to get recommendations! <a href="{{ url_for('index') }}" class="btn btn-primary">Browse</a></div>
+{% else %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for song in recommendations %}
+    <div class="col">
+        <div class="card h-100">
+            <img src="{{ song.album_art }}" class="card-img-top" style="height:200px;object-fit:cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ song.title }}</h5>
+                <p class="card-text text-muted">{{ song.artist }} · {{ song.genre }}</p>
+                <button class="btn btn-success play-btn" data-id="{{ song.id }}" data-preview="{{ song.preview_url }}">▶ Play</button>
+                <audio class="audio-player" id="audio-{{ song.id }}" src="{{ song.preview_url }}"></audio>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+document.querySelectorAll('.play-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const audio = document.getElementById('audio-' + this.dataset.id);
+        document.querySelectorAll('.audio-player').forEach(a => { if (a !== audio) a.pause(); });
+        if (audio.paused) { audio.play(); this.textContent = '⏸ Pause'; } else { audio.pause(); this.textContent = '▶ Play'; }
+    });
+});
+document.querySelectorAll('.audio-player').forEach(audio => {
+    audio.addEventListener('ended', function() {
+        const btn = document.querySelector(`.play-btn[data-id="${this.id.replace('audio-', '')}"]`);
+        if (btn) btn.textContent = '▶ Play';
+    });
+});
+</script>
+{% endif %}
+{% endblock %}
